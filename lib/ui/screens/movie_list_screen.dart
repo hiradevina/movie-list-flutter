@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:movielist/ui/components/movie_component.dart';
 
 import '../../../bloc/movie_bloc.dart';
 import '../../../bloc/movie_event.dart';
@@ -20,8 +21,7 @@ class _MovieListPageState extends State<MovieListPage> {
   void initState() {
     super.initState();
     _movieBloc = MovieBloc()..add(FetchMovies(page: 1));
-    _scrollController = ScrollController()
-      ..addListener(_onScroll);
+    _scrollController = ScrollController()..addListener(_onScroll);
   }
 
   void _onScroll() {
@@ -56,31 +56,34 @@ class _MovieListPageState extends State<MovieListPage> {
         appBar: AppBar(title: const Text('Popular Movies')),
         body: BlocBuilder<MovieBloc, MovieState>(
           builder: (context, state) {
-            if (state is MovieInitial || state is MovieLoading && state is! MovieLoaded) {
+            if (state is MovieInitial ||
+                state is MovieLoading && state is! MovieLoaded) {
               return const Center(child: CircularProgressIndicator());
             } else if (state is MovieLoaded) {
-              return ListView.builder(
+              return GridView.builder(
+                gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 1.0,
+                  crossAxisSpacing: 0.0,
+                  mainAxisSpacing: 5,
+                  mainAxisExtent: 350,
+                ),
+                padding: EdgeInsets.all(8),
                 controller: _scrollController,
                 itemCount: state.hasReachedEnd
                     ? state.movies.length
                     : state.movies.length + 1,
                 itemBuilder: (context, index) {
                   if (index >= state.movies.length) {
-                    return const Center(child: Padding(
+                    return const Center(
+                        child: Padding(
                       padding: EdgeInsets.all(16.0),
                       child: CircularProgressIndicator(),
                     ));
                   }
 
                   final movie = state.movies[index];
-                  return ListTile(
-                    leading: Image.network(
-                      'https://image.tmdb.org/t/p/w200${movie.posterPath}',
-                      width: 50,
-                      fit: BoxFit.cover,
-                    ),
-                    title: Text(movie.title),
-                  );
+                  return MovieComponent(movie: movie);
                 },
               );
             } else if (state is MovieError) {
