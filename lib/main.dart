@@ -9,6 +9,7 @@ import 'package:movielist/config/style.dart';
 import 'package:path_provider/path_provider.dart';
 
 import 'bloc/theme_cubit.dart';
+import 'data/models/movie.dart';
 import 'ui/screens/skeleton_screen.dart';
 
 /// Try using const constructors as much as possible!
@@ -20,7 +21,9 @@ void main() async {
     await FlutterDisplayMode.setHighRefreshRate();
   }
   final Directory tmpDir = await getTemporaryDirectory();
-  Hive.init(tmpDir.toString());
+  Hive.init(tmpDir.path);
+  Hive.registerAdapter(MovieAdapter());
+  await Hive.openBox<Movie>('movies');
   HydratedBloc.storage = await HydratedStorage.build(
     storageDirectory: tmpDir,
   );

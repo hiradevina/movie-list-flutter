@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:movielist/ui/uimodel/movie_ui_model.dart';
 
 abstract class MovieEvent extends Equatable {
   @override
@@ -21,4 +22,18 @@ class SearchMovies extends MovieEvent {
 
   @override
   List<Object?> get props => [query];
+}
+
+class AddToFavorite extends MovieEvent {
+  final MovieUiModel uiModel;
+
+  AddToFavorite(this.uiModel);
+
+  @override
+  List<Object?> get props => [uiModel];
+}
+
+class FilterFavorite extends MovieEvent {
+  @override
+  List<Object?> get props => [];
 }

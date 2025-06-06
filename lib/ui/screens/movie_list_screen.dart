@@ -52,25 +52,41 @@ class _MovieListPageState extends State<MovieListPage> {
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _movieBloc,
-      child: Scaffold(
-        appBar: AppBar(title: const Text('Popular Movies')),
-        body: BlocBuilder<MovieBloc, MovieState>(
-          builder: (context, state) {
-            return Column(
+      child: BlocBuilder<MovieBloc, MovieState>(
+        builder: (context, state) {
+          return Scaffold(
+            appBar: AppBar(
+              title: const Text('Popular Movies'),
+              actions: [
+                IconButton(
+                  onPressed: () {
+                    _movieBloc.add(FilterFavorite());
+                  },
+                  icon: Icon(
+                      (state is MovieLoaded && state.isFavorite)
+                          ? Icons.favorite
+                          : Icons.favorite_border,
+                      color: Colors.red),
+                ),
+              ],
+            ),
+            body: Column(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8),
                   child: SearchBar(
                     hintText: "Search",
-                    leading: Icon(Icons.search, color: Colors.black),
-                    onChanged: (query) => {_movieBloc.add(SearchMovies(query))},
+                    leading: const Icon(Icons.search, color: Colors.black),
+                    onChanged: (query) {
+                      _movieBloc.add(SearchMovies(query));
+                    },
                   ),
                 ),
-                Expanded(child: MovieList(state))
+                Expanded(child: MovieList(state)),
               ],
-            );
-          },
-        ),
+            ),
+          );
+        },
       ),
     );
   }
@@ -102,7 +118,9 @@ class _MovieListPageState extends State<MovieListPage> {
           }
 
           final movie = state.movies[index];
-          return MovieComponent(movie: movie);
+          return MovieComponent(
+              uimodel: movie,
+              onPress: () => {_movieBloc.add(AddToFavorite(movie))});
         },
       );
     } else if (state is MovieError) {

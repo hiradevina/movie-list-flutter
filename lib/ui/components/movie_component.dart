@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
-import '../../data/models/movie.dart';
+import 'package:movielist/ui/uimodel/movie_ui_model.dart';
 
 class MovieComponent extends StatelessWidget {
-  const MovieComponent({super.key, required this.movie});
+  const MovieComponent({super.key, required this.uimodel, required this.onPress});
 
-  final Movie movie;
+  final MovieUiModel uimodel;
+  final Function onPress;
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class MovieComponent extends StatelessWidget {
       child: Column(
         children: [
           Image.network(
-            'https://image.tmdb.org/t/p/w200${movie.posterPath}',
+            'https://image.tmdb.org/t/p/w200${uimodel.movie.posterPath}',
             fit: BoxFit.fitWidth,
           ),
           Expanded(
@@ -27,13 +27,20 @@ class MovieComponent extends StatelessWidget {
                 children: [
                   Expanded(
                     child: Text(
-                      movie.title,
+                      uimodel.movie.title,
                       style: Theme.of(context).primaryTextTheme.titleSmall,
                       overflow: TextOverflow.ellipsis,
                       softWrap: true,
                     ),
                   ),
-                  Icon(Icons.favorite_border, color: Colors.black)
+                  IconButton(
+                    onPressed: () => { onPress() },
+                    icon: Icon(
+                        uimodel.isFavorite
+                            ? Icons.favorite
+                            : Icons.favorite_border,
+                        color: Colors.black),
+                  )
                 ],
               ),
             ),
