@@ -40,5 +40,24 @@ class MovieBloc extends Bloc<MovieEvent, MovieState> {
         _isFetching = false;
       }
     });
+    on<SearchMovies>((event, emit) async {
+      if (event.query.isNotEmpty) {
+        final match = allMovies
+            .where((movie) =>
+                movie.title.toLowerCase().contains(event.query.toLowerCase()))
+            .toList();
+        if (state is MovieLoaded) {
+          emit(MovieLoaded(
+              movies: match,
+              currentPage: (state as MovieLoaded).currentPage,
+              hasReachedEnd: (state as MovieLoaded).hasReachedEnd));
+        }
+      } else {
+        emit(MovieLoaded(
+            movies: allMovies,
+            currentPage: (state as MovieLoaded).currentPage,
+            hasReachedEnd: (state as MovieLoaded).hasReachedEnd));
+      }
+    });
   }
 }
